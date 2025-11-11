@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CPSC 240 Exam 03 Study Guide</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        font-family: "Inter", system-ui, -apple-system, sans-serif;
+      }
+      .code-block {
+        background: #1e1e1e;
+        border-radius: 8px;
+        overflow-x: auto;
+      }
+      .code-line {
+        font-family: "Courier New", monospace;
+        font-size: 14px;
+        line-height: 1.6;
+      }
+      .keyword {
+        color: #569cd6;
+      }
+      .register {
+        color: #4ec9b0;
+      }
+      .number {
+        color: #b5cea8;
+      }
+      .comment {
+        color: #6a9955;
+      }
+      .section {
+        color: #c586c0;
+      }
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .animate-slide-in {
+        animation: slideIn 0.4s ease-out;
+      }
+    </style>
+  </head>
+  <body class="min-h-screen p-4">
+    <div id="root"></div>
+
+    <script type="text/babel">
+              const { useState } = React;
+
+              const StudyGuide = () => {
+                  const [activeTab, setActiveTab] = useState('overview');
+                  const [expandedSections, setExpandedSections] = useState({});
+
+                  const toggleSection = (section) => {
+                      setExpandedSections(prev => ({
+                          ...prev,
+                          [section]: !prev[section]
+                      }));
+                  };
+
+                  const CodeBlock = ({ code }) => (
+                      <pre className="code-block p-4 my-4">
+                          {code.split('\n').map((line, i) => (
+                              <div key={i} className="code-line">
+                                  {line.split(/(\bsection\b|\bmov\b|\bmul\b|\bdiv\b|\binc\b|\bdec\b|\bcmp\b|\bjne\b|\bjge\b|\bpush\b|\bpop\b|\bloop\b|\badd\b|ax|bx|cx|dx|eax|ebx|ecx|edx|rax|rbx|rcx|rdx|rsi|rdi|al|bl|0x[0-9A-Fa-f]+|;.*$)/).map((part, j) => {
+                                      if (['section', 'mov', 'mul', 'div', 'inc', 'dec', 'cmp', 'jne', 'jge', 'push', 'pop', 'loop', 'add'].includes(part)) {
+                                          return <span key={j} className="keyword">{part}</span>;
+                                      } else if (['ax', 'bx', 'cx', 'dx', 'eax', 'ebx', 'ecx', 'edx', 'rax', 'rbx', 'rcx', 'rdx', 'rsi', 'rdi', 'al', 'bl'].includes(part)) {
+                                          return <span key={j} className="register">{part}</span>;
+                                      } else if (part.startsWith('0x') || part.match(/^\d+$/)) {
+                                          return <span key={j} className="number">{part}</span>;
+                                      } else if (part.startsWith(';')) {
+                                          return <span key={j} className="comment">{part}</span>;
+                                      } else {
+                                          return <span key={j} className="text-gray-300">{part}</span>;
+                                      }
+                                  })}
+                              </div>
+                          ))}
+                      </pre>
+                  );
+
+                  const Table = ({ headers, rows }) => (
+                      <div className="overflow-x-auto my-4">
+                          <table className="min-w-full bg-white border border-gray-300 rounded-lg shadow-sm">
+                              <thead className="bg-gradient-to-r from-blue-500 to-purple-500 text-white">
+                                  <tr>
+                                      {headers.map((header, i) => (
+                                          <th key={i} className="px-4 py-3 text-left text-sm font-semibold">{header}</th>
+                                      ))}
+                                  </tr>
+                              </thead>
+                              <tbody>
+                                  {rows.map((row, i) => (
+                                      <tr key={i} className={i % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
+                                          {row.map((cell, j) => (
+                                              <td key={j} className="px-4 py-3 text-sm text-gray-800 border-t border-gray-200">{cell}</td>
+                                          ))}
+                                      </tr>
+                                  ))}
+                              </tbody>
+                          </table>
+                      </div>
+                  );
+
+                  const CollapsibleSection = ({ title, children, id }) => (
+                      <div className="mb-4 bg-white rounded-lg shadow-md overflow-hidden">
+                          <button
+                              onClick={() => toggleSection(id)}
+                              className="w-full px-6 py-4 text-left font-semibold text-lg bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:from-blue-600 hover:to-purple-600 transition-all flex justify-between items-center"
+                          >
+                              {title}
+                              <span className="text-2xl">{expandedSections[id] ? '−' : '+'}</span>
+                          </button>
+                          {expandedSections[id] && (
+                              <div className="p-6 animate-slide-in">
+                                  {children}
+                              </div>
+                          )}
+                      </div>
+                  );
+
+                  const Problem1 = () => (
+                      <div>
+                          <h3 className="text-2xl font-bold mb-4 text-purple-700">Problem 1: Multiplication with Word-Sized Registers</h3>
+
+                          <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-4">
+                              <p className="font-semibold text-blue-900">Key Concepts:</p>
+                              <ul className="list-disc ml-6 mt-2 text-blue-800">
+                                  <li>Word-sized (16-bit) operations</li>
+                                  <li>Multiplication instruction (mul)</li>
+                                  <li>Result stored in dx:ax (32-bit)</li>
+                              </ul>
+                          </div>
+
+                          <CodeBlock code={`section .data
+      num1 dw 60    ; num1 = 60 = 0x003C
+      num2 dw 90    ; num2 = 90 = 0x005A
+      num3 dw 0     ; num3 = 0 = 0x0000
+
+      section .text
+      _start:
+          mov ax, word[num1]      ; ax = 0x003C
+          mov bx, word[num2]      ; bx = 0x005A
+          mul bx                  ; dx:ax = ax * bx
+          mov word[num3], ax      ; Store lower 16 bits
+      done:`} />
+
+                          <CollapsibleSection title="Decimal to Hex Conversions" id="p1-conversions">
+                              <div className="space-y-4">
+                                  <div className="bg-purple-50 p-4 rounded-lg border-2 border-purple-300">
+                                      <h5 className="font-bold text-purple-900 mb-3">Converting 60₁₀ to Hex:</h5>
+                                      <div className="bg-white p-3 rounded mb-2">
+                                          <p className="font-semibold mb-2">Step 1: Divide by 16 repeatedly</p>
+                                          <ul className="text-sm space-y-1 ml-4">
+                                              <li>60 ÷ 16 = 3 remainder <strong>12 (C)</strong> → Least significant digit</li>
+                                              <li>3 ÷ 16 = 0 remainder <strong>3</strong> → Most significant digit</li>
+                                          </ul>
+                                      </div>
+                                      <div className="bg-white p-3 rounded">
+                                          <p className="font-semibold mb-2">Step 2: Write digits from last to first</p>
+                                          <p className="text-sm">Reading remainders: <strong>3 C</strong></p>
+                                          <p className="text-green-700 font-bold mt-2">✅ 60₁₀ = 0x003C</p>
+                                          <p className="text-xs text-gray-600 mt-2">Verify: 3×16¹ + 12×16⁰ = 48 + 12 = 60 ✓</p>
+                                      </div>
+                                  </div>
+
+                                  <div className="bg-purple-50 p-4 rounded-lg border-2 border-purple-300">
+                                      <h5 className="font-bold text-purple-900 mb-3">Converting 90₁₀ to Hex:</h5>
+                                      <div className="bg-white p-3 rounded mb-2">
+                                          <p className="font-semibold mb-2">Step 1: Divide by 16 repeatedly</p>
+                                          <ul className="text-sm space-y-1 ml-4">
+                                              <li>90 ÷ 16 = 5 remainder <strong>10 (A)</strong> → Least significant digit</li>
+                                              <li>5 ÷ 16 = 0 remainder <strong>5</strong> → Most significant digit</li>
+                                          </ul>
+                                      </div>
+                                      <div className="bg-white p-3 rounded">
+                                          <p className="font-semibold mb-2">Step 2: Write digits from last to first</p>
+                                          <p className="text-sm">Reading remainders: <strong>5 A</strong></p>
+                                          <p className="text-green-700 font-bold mt-2">✅ 90₁₀ = 0x005A</p>
+                                          <p className="text-xs text-gray-600 mt-2">Verify: 5×16¹ + 10×16⁰ = 80 + 10 = 90 ✓</p>
+                                      </div>
+                                  </div>
+
+                                  <div className="bg-purple-50 p-4 rounded-lg border-2 border-purple-300">
+                                      <h5 className="font-bold text-purple-900 mb-3">Converting 5400₁₀ to Hex:</h5>
+                                      <div className="bg-white p-3 rounded mb-2">
+                                          <p className="font-semibold mb-2">Step 1: Divide by 16 repeatedly</p>
+                                          <ul className="text-sm space-y-1 ml-4">
+                                              <li>5400 ÷ 16 = 337 remainder <strong>8</strong> → Least significant digit</li>
+                                              <li>337 ÷ 16 = 21 remainder <strong>1</strong> → Next hex digit</li>
+                                              <li>21 ÷ 16 = 1 remainder <strong>5</strong> → Next hex digit</li>
+                                              <li>1 ÷ 16 = 0 remainder <strong>1</strong> → Most significant digit</li>
+                                          </ul>
+                                      </div>
+                                      <div className="bg-white p-3 rounded">
+                                          <p className="font-semibold mb-2">Step 2: Write digits from last to first</p>
+                                          <p className="text-sm">Reading remainders: <strong>1 5 1 8</strong></p>
+                                          <p className="text-green-700 font-bold mt-2">✅ 5400₁₀ = 0x1518</p>
+                                          <p className="text-xs text-gray-600 mt-2">Verify: 1×16³ + 5×16² + 1×16¹ + 8×16⁰ = 4096 + 1280 + 16 + 8 = 5400 ✓</p>
+                                      </div>
+                                  </div>
+
+                              </div>
+                          </CollapsibleSection>
+
+                          <CollapsibleSection title="Step-by-Step Execution" id="p1-steps">
+                              <ol className="list-decimal ml-6 space-y-2">
+                                  <li><strong>mov ax, word[num1]:</strong> ax = 0x003C (60 decimal)</li>
+                                  <li><strong>mov bx, word[num2]:</strong> bx = 0x005A (90 decimal)</li>
+                                  <li><strong>mul bx:</strong>
+                                      <ul className="list-disc ml-6 mt-1">
+                                          <li>60 × 90 = 5400 decimal = 0x1518 hex</li>
+                                          <li>Result stored as dx:ax (32-bit result split across two 16-bit registers)</li>
+                                          <li>dx = 0x0000 (upper 16 bits)</li>
+                                          <li>ax = 0x1518 (lower 16 bits, 5400 decimal)</li>
+                                      </ul>
+                                  </li>
+                                  <li><strong>mov word[num3], ax:</strong> num3 = 0x1518 (5400 decimal)</li>
+                              </ol>
+                          </CollapsibleSection>
+
+                          <CollapsibleSection title="Final Answer" id="p1-answer">
+                              <h4 className="font-semibold text-lg mb-3">Memory State:</h4>
+                              <Table
+                                  headers={['Memory', 'Offset', 'Before', 'After']}
+                                  rows={[
+                                      ['num3', '+1', '0x00', '0x15'],
+                                      ['num3', '+0', '0x00', '0x18'],
+                                      ['num2', '+1', '0x00', '0x00'],
+                                      ['num2', '+0', '0x5A', '0x5A'],
+                                      ['num1', '+1', '0x00', '0x00'],
+                                      ['num1', '+0', '0x3C', '0x3C']
+                                  ]}
+                              />
+                              <h4 className="font-semibold text-lg mb-3 mt-6">Register State:</h4>
+                              <Table
+                                  headers={['Register', 'Value (Hex)', 'Description']}
+                                  rows={[
+                                      ['ax', '0x1518', 'Product lower 16 bits (5400 decimal)'],
+                                      ['bx', '0x005A', 'Multiplier (90 decimal)'],
+                                      ['dx', '0x0000', 'Product upper 16 bits']
+                                  ]}
+                              />
+                          </CollapsibleSection>
+                      </div>
+                  );
+
+                  const Problem2 = () => (
+                      <div>
+                          <h3 className="text-2xl font-bold mb-4 text-purple-700">Problem 2: Division and Loop with Counter</h3>
+
+                          <div className="bg-green-50 border-l-4 border-green-500 p-4 mb-4">
+                              <p className="font-semibold text-green-900">Key Concepts:</p>
+                              <ul className="list-disc ml-6 mt-2 text-green-800">
+                                  <li>Division operation (div)</li>
+                                  <li>Loop constructs and conditional jumps</li>
+                                  <li>Counting multiples using remainder</li>
+                              </ul>
+                          </div>
+
+                          <CodeBlock code={`section .data
+      mul3 dd 0                   ; [mul3] = 0x00000000
+
+      section .text
+      _start:
+          mov ecx, 105            ; ecx = 105 = 0x69
+      next:
+          mov edx, 0              ; edx = 0
+          mov eax, ecx            ; eax = ecx = 105, 106, 107, 108
+          mov ebx, 3              ; ebx = 3
+          div ebx                 ; edx = edx:eax % ebx = 105%3=0, 106%3=1, 107%3=2, 108%3=0
+                                  ; eax = edx:eax / ebx = 105/3=35, 106/3=35, 107/3=35, 108/3=36
+          cmp edx, 0              ; edx == 0 ?
+          jne skip                ; F, T, T, F (jump on iterations 2 and 3)
+          inc dword[mul3]         ; [mul3] = 0+1+1 = 2 = 0x00000002
+      skip:
+          inc ecx                 ; ecx = 105+1+1+1+1 = 109 = 0x6D
+          cmp ecx, 109            ; 109 == 109 ?
+          jne next                ; T, T, T, F (exit after 4th iteration)
+      done:`} />
+
+                          <CollapsibleSection title="Decimal to Hex Conversions" id="p2-conversions">
+                              <div className="space-y-4">
+                                  <div className="bg-green-50 p-4 rounded-lg border-2 border-green-300">
+                                      <h5 className="font-bold text-green-900 mb-3">Converting 105₁₀ to Hex:</h5>
+                                      <div className="bg-white p-3 rounded mb-2">
+                                          <p className="font-semibold mb-2">Step 1: Divide by 16 repeatedly</p>
+                                          <ul className="text-sm space-y-1 ml-4">
+                                              <li>105 ÷ 16 = 6 remainder <strong>9</strong> → Least significant digit</li>
+                                              <li>6 ÷ 16 = 0 remainder <strong>6</strong> → Most significant digit</li>
+                                          </ul>
+                                      </div>
+                                      <div className="bg-white p-3 rounded">
+                                          <p className="font-semibold mb-2">Step 2: Write digits from last to first</p>
+                                          <p className="text-sm">Reading remainders: <strong>6 9</strong></p>
+                                          <p className="text-green-700 font-bold mt-2">✅ 105₁₀ = 0x69</p>
+                                          <p className="text-xs text-gray-600 mt-2">Verify: 6×16¹ + 9×16⁰ = 96 + 9 = 105 ✓</p>
+                                      </div>
+                                  </div>
+
+                                  <div className="bg-green-50 p-4 rounded-lg border-2 border-green-300">
+                                      <h5 className="font-bold text-green-900 mb-3">Converting 108₁₀ to Hex:</h5>
+                                      <div className="bg-white p-3 rounded mb-2">
+                                          <p className="font-semibold mb-2">Step 1: Divide by 16 repeatedly</p>
+                                          <ul className="text-sm space-y-1 ml-4">
+                                              <li>108 ÷ 16 = 6 remainder <strong>12 (C)</strong> → Least significant digit</li>
+                                              <li>6 ÷ 16 = 0 remainder <strong>6</strong> → Most significant digit</li>
+                                          </ul>
+                                      </div>
+                                      <div className="bg-white p-3 rounded">
+                                          <p className="font-semibold mb-2">Step 2: Write digits from last to first</p>
+                                          <p className="text-sm">Reading remainders: <strong>6 C</strong></p>
+                                          <p className="text-green-700 font-bold mt-2">✅ 108₁₀ = 0x6C</p>
+                                          <p className="text-xs text-gray-600 mt-2">Verify: 6×16¹ + 12×16⁰ = 96 + 12 = 108 ✓</p>
+                                      </div>
+                                  </div>
+
+                                  <div className="bg-green-50 p-4 rounded-lg border-2 border-green-300">
+                                      <h5 className="font-bold text-green-900 mb-3">Converting 109₁₀ to Hex:</h5>
+                                      <div className="bg-white p-3 rounded mb-2">
+                                          <p className="font-semibold mb-2">Step 1: Divide by 16 repeatedly</p>
+                                          <ul className="text-sm space-y-1 ml-4">
+                                              <li>109 ÷ 16 = 6 remainder <strong>13 (D)</strong> → Least significant digit</li>
+                                              <li>6 ÷ 16 = 0 remainder <strong>6</strong> → Most significant digit</li>
+                                          </ul>
+                                      </div>
+                                      <div className="bg-white p-3 rounded">
+                                          <p className="font-semibold mb-2">Step 2: Write digits from last to first</p>
+                                          <p className="text-sm">Reading remainders: <strong>6 D</strong></p>
+                                          <p className="text-green-700 font-bold mt-2">✅ 109₁₀ = 0x6D (loop exit value)</p>
+                                          <p className="text-xs text-gray-600 mt-2">Verify: 6×16¹ + 13×16⁰ = 96 + 13 = 109 ✓</p>
+                                      </div>
+                                  </div>
+
+                                  <div className="bg-green-50 p-4 rounded-lg border-2 border-green-300">
+                                      <h5 className="font-bold text-green-900 mb-3">Converting 36₁₀ to Hex:</h5>
+                                      <div className="bg-white p-3 rounded mb-2">
+                                          <p className="font-semibold mb-2">Step 1: Divide by 16 repeatedly</p>
+                                          <ul className="text-sm space-y-1 ml-4">
+                                              <li>36 ÷ 16 = 2 remainder <strong>4</strong> → Least significant digit</li>
+                                              <li>2 ÷ 16 = 0 remainder <strong>2</strong> → Most significant digit</li>
+                                          </ul>
+                                      </div>
+                                      <div className="bg-white p-3 rounded">
+                                          <p className="font-semibold mb-2">Step 2: Write digits from last to first</p>
+                                          <p className="text-sm">Reading remainders: <strong>2 4</strong></p>
+                                          <p className="text-green-700 font-bold mt-2">✅ 36₁₀ = 0x24 (last quotient)</p>
+                                          <p className="text-xs text-gray-600 mt-2">Verify: 2×16¹ + 4×16⁰ = 32 + 4 = 36 ✓</p>
+                                      </div>
+                                  </div>
+
+                                  <div className="bg-green-50 p-4 rounded-lg border-2 border-green-300">
+                                      <h5 className="font-bold text-green-900 mb-3">Converting 2₁₀ to Hex:</h5>
+                                      <div className="bg-white p-3 rounded mb-2">
+                                          <p className="font-semibold mb-2">Step 1: Divide by 16 repeatedly</p>
+                                          <ul className="text-sm space-y-1 ml-4">
+                                              <li>2 ÷ 16 = 0 remainder <strong>2</strong> → Only digit</li>
+                                          </ul>
+                                      </div>
+                                      <div className="bg-white p-3 rounded">
+                                          <p className="font-semibold mb-2">Step 2: Write digits from last to first</p>
+                                          <p className="text-sm">Reading remainders: <strong>2</strong></p>
+                                          <p className="text-green-700 font-bold mt-2">✅ 2₁₀ = 0x02 (final mul3 count)</p>
+                                          <p className="text-xs text-gray-600 mt-2">Verify: 2×16⁰ = 2 ✓</p>
+                                      </div>
+                                  </div>
+                              </div>
+                          </CollapsibleSection>
+
+                          <CollapsibleSection title="Loop Iterations" id="p2-steps">
+                              <p className="mb-3">This loop counts numbers from 105-108 that are divisible by 3:</p>
+                              <Table
+                                  headers={['Iteration', 'ecx', 'eax÷3', 'edx (remainder)', 'mul3 incremented?']}
+                                  rows={[
+                                      ['1', '105', '35', '0', 'Yes (mul3=1)'],
+                                      ['2', '106', '35', '1', 'No'],
+                                      ['3', '107', '35', '2', 'No'],
+                                      ['4', '108', '36', '0', 'Yes (mul3=2)']
+                                  ]}
+                              />
+                              <p className="mt-3 text-gray-700">After loop exits: ecx = 109</p>
+                          </CollapsibleSection>
+
+                          <CollapsibleSection title="Understanding the Result: Why mul3 = 2?" id="p2-understanding">
+                              <div className="space-y-4">
+                                  <div className="bg-blue-50 border-l-4 border-blue-500 p-4">
+                                      <p className="font-semibold text-blue-900 mb-2">🧩 The Magic Number "2"</p>
+                                      <p className="text-blue-800">
+                                          That "2" didn't appear by magic — it's the result of the arithmetic and logic operations 
+                                          the program performed. Let's trace through exactly how we got this value.
+                                      </p>
+                                  </div>
+
+                                  <div className="bg-white p-4 rounded-lg border-2 border-gray-200">
+                                      <h5 className="font-bold text-gray-900 mb-3">🧮 Analyzing the Final State</h5>
+                                      <p className="mb-3">From our register state:</p>
+                                      <ul className="list-disc ml-6 space-y-1 text-gray-700">
+                                          <li><strong>eax = 36</strong> (last quotient)</li>
+                                          <li><strong>ebx = 3</strong> (divisor)</li>
+                                          <li><strong>edx = 0</strong> (last remainder)</li>
+                                          <li><strong>ecx = 109</strong> (loop exit value)</li>
+                                      </ul>
+                                      <div className="mt-3 bg-gray-50 p-3 rounded">
+                                          <p className="text-sm">Notice: 36 ÷ 3 = 12, and 3 × 12 = 36</p>
+                                          <p className="text-sm mt-1">Everything divides evenly since remainder edx = 0</p>
+                                          <p className="text-sm mt-2 text-blue-700">
+                                              <strong>But we stored 2, not 12 or 36 — what gives?</strong>
+                                          </p>
+                                      </div>
+                                  </div>
+
+                                  <div className="bg-green-50 p-4 rounded-lg border-2 border-green-300">
+                                      <h5 className="font-bold text-green-900 mb-3">🧠 The Most Probable Scenario</h5>
+                                      <p className="mb-3 text-green-800">
+                                          The variable <code>mul3</code> wasn't used to store the quotient directly, 
+                                          but rather as a <strong>counter</strong> tracking how many multiples of 3 were found.
+                                      </p>
+                                      <div className="bg-white p-3 rounded mb-3">
+                                          <p className="font-semibold mb-2">In C-like pseudocode:</p>
+                                          <pre className="bg-gray-900 text-green-400 p-3 rounded text-sm font-mono">
+{`mul3 = 0;
+for (int i = 105; i < 109; i++) {
+    if (i % 3 == 0)
+        mul3++;
+}`}
+                                          </pre>
+                                      </div>
+                                      <p className="text-green-800">
+                                          The variable <code>mul3</code> increments by one every time the loop finds 
+                                          a multiple of 3. The final value of 2 means the program found 
+                                          <strong> two multiples of 3</strong> in the range 105-108.
+                                      </p>
+                                  </div>
+
+                                  <div className="bg-purple-50 p-4 rounded-lg border-2 border-purple-300">
+                                      <h5 className="font-bold text-purple-900 mb-3">🧩 In Memory Terms</h5>
+                                      <div className="space-y-2">
+                                          <div className="bg-white p-3 rounded flex items-center">
+                                              <span className="text-2xl mr-3">1️⃣</span>
+                                              <div>
+                                                  <p className="font-semibold">Initially: mul3 = 0</p>
+                                                  <p className="text-sm text-gray-600">Starting state</p>
+                                              </div>
+                                          </div>
+                                          <div className="bg-white p-3 rounded flex items-center">
+                                              <span className="text-2xl mr-3">2️⃣</span>
+                                              <div>
+                                                  <p className="font-semibold">After finding 105 (multiple of 3): mul3 = 1</p>
+                                                  <p className="text-sm text-gray-600">105 ÷ 3 = 35, remainder 0 ✓</p>
+                                              </div>
+                                          </div>
+                                          <div className="bg-white p-3 rounded flex items-center">
+                                              <span className="text-2xl mr-3">3️⃣</span>
+                                              <div>
+                                                  <p className="font-semibold">After finding 108 (multiple of 3): mul3 = 2</p>
+                                                  <p className="text-sm text-gray-600">108 ÷ 3 = 36, remainder 0 ✓</p>
+                                              </div>
+                                          </div>
+                                          <div className="bg-white p-3 rounded flex items-center border-2 border-green-500">
+                                              <span className="text-2xl mr-3">✅</span>
+                                              <div>
+                                                  <p className="font-semibold text-green-700">Stored in memory: [mul3] = 0x00000002</p>
+                                                  <p className="text-sm text-gray-600">Final count of multiples found</p>
+                                              </div>
+                                          </div>
+                                      </div>
+                                  </div>
+
+                                  <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4">
+                                      <h5 className="font-bold text-yellow-900 mb-3">🧭 In Short</h5>
+                                      <p className="text-yellow-800 mb-3">
+                                          The "2" is not arbitrary — it's a <strong>counted result</strong>.
+                                      </p>
+                                      <div className="bg-white p-3 rounded">
+                                          <p className="font-semibold mb-2">It means:</p>
+                                          <p className="text-gray-700">
+                                              The program has encountered or computed <strong>two values satisfying 
+                                              its "multiple of 3" condition</strong> (105 and 108) in the loop range.
+                                          </p>
+                                      </div>
+                                  </div>
+
+                                  <div className="bg-gradient-to-r from-blue-100 to-purple-100 p-4 rounded-lg">
+                                      <p className="font-semibold text-purple-900 mb-2">💡 Key Insight:</p>
+                                      <p className="text-gray-800">
+                                          In assembly loops, variables are often used as counters rather than storage 
+                                          for computation results. The <code>inc dword[mul3]</code> instruction increments 
+                                          the counter each time a condition is met, giving us a final count of matching items.
+                                      </p>
+                                  </div>
+                              </div>
+                          </CollapsibleSection>
+
+                          <CollapsibleSection title="Final Answer" id="p2-answer">
+                              <h4 className="font-semibold text-lg mb-3">Memory State:</h4>
+                              <Table
+                                  headers={['Memory', 'Offset', 'Before', 'After']}
+                                  rows={[
+                                      ['mul3', '+3', '0x00', '0x00'],
+                                      ['mul3', '+2', '0x00', '0x00'],
+                                      ['mul3', '+1', '0x00', '0x00'],
+                                      ['mul3', '+0', '0x00', '0x02']
+                                  ]}
+                              />
+                              <h4 className="font-semibold text-lg mb-3 mt-6">Register State:</h4>
+                              <Table
+                                  headers={['Register', 'Value (Hex)', 'Decimal']}
+                                  rows={[
+                                      ['eax', '0x00000024', '36 (last quotient)'],
+                                      ['ebx', '0x00000003', '3'],
+                                      ['ecx', '0x0000006D', '109 (loop exit)'],
+                                      ['edx', '0x00000000', '0 (last remainder)']
+                                  ]}
+                              />
+                          </CollapsibleSection>
+                      </div>
+                  );
+
+                  const Problem3 = () => (
+                      <div>
+                          <h3 className="text-2xl font-bold mb-4 text-purple-700">Problem 3: Stack Operations and Array Reversal</h3>
+
+                          <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4 mb-4">
+                              <p className="font-semibold text-yellow-900">Key Concepts:</p>
+                              <ul className="list-disc ml-6 mt-2 text-yellow-800">
+                                  <li>Stack operations (push/pop)</li>
+                                  <li>LIFO (Last In First Out) behavior</li>
+                                  <li>Array reversal using stack</li>
+                              </ul>
+                          </div>
+
+                          <CodeBlock code={`section .data
+      array db 0x64, 0x7D, 0x96, 0xAF    ; 100, 125, 150, 175
+      len db 4
+
+      section .text
+      _start:
+          movzx rcx, byte[len]    ; rcx = 4
+          mov rsi, 0              ; rsi = 0
+      pushLoop:
+          mov rax, 0              ; rax = 0x0000000000000000
+          mov al, byte[array+rsi] ; al = 0x64, 0x7D, 0x96, 0xAF
+          push rax                ; Push 0x64, 0x7D, 0x96, 0xAF onto stack
+          inc rsi                 ; rsi = 0+1+1+1+1 = 4
+          loop pushLoop           ; dec rcx; rcx = 4-1-1-1-1 = 0
+                                  ; cmp rcx, 0; jne pushLoop
+
+          movzx rcx, byte[len]    ; rcx = 4
+          mov rsi, 0              ; rsi = 0
+      popLoop:
+          pop rax                 ; rax = 0x00000000000000AF, 0x96, 0x7D, 0x64
+          mov byte[array+rsi], al ; array = 0xAF, 0x96, 0x7D, 0x64
+          inc rsi                 ; rsi = 0+1+1+1+1 = 4
+          loop popLoop            ; dec rcx; rcx = 4-1-1-1-1 = 0
+                                  ; cmp rcx, 0; jne popLoop
+      done:`} />
+
+                          <CollapsibleSection title="Decimal to Hex Conversions" id="p3-conversions">
+                              <div className="space-y-4">
+                                  <div className="bg-yellow-50 p-4 rounded-lg border-2 border-yellow-300">
+                                      <h5 className="font-bold text-yellow-900 mb-3">Converting 100₁₀ to Hex:</h5>
+                                      <div className="bg-white p-3 rounded mb-2">
+                                          <p className="font-semibold mb-2">Step 1: Divide by 16 repeatedly</p>
+                                          <ul className="text-sm space-y-1 ml-4">
+                                              <li>100 ÷ 16 = 6 remainder <strong>4</strong> → Least significant digit</li>
+                                              <li>6 ÷ 16 = 0 remainder <strong>6</strong> → Most significant digit</li>
+                                          </ul>
+                                      </div>
+                                      <div className="bg-white p-3 rounded">
+                                          <p className="font-semibold mb-2">Step 2: Write digits from last to first</p>
+                                          <p className="text-sm">Reading remainders: <strong>6 4</strong></p>
+                                          <p className="text-green-700 font-bold mt-2">✅ 100₁₀ = 0x64</p>
+                                          <p className="text-xs text-gray-600 mt-2">Verify: 6×16¹ + 4×16⁰ = 96 + 4 = 100 ✓</p>
+                                      </div>
+                                  </div>
+
+                                  <div className="bg-yellow-50 p-4 rounded-lg border-2 border-yellow-300">
+                                      <h5 className="font-bold text-yellow-900 mb-3">Converting 125₁₀ to Hex:</h5>
+                                      <div className="bg-white p-3 rounded mb-2">
+                                          <p className="font-semibold mb-2">Step 1: Divide by 16 repeatedly</p>
+                                          <ul className="text-sm space-y-1 ml-4">
+                                              <li>125 ÷ 16 = 7 remainder <strong>13 (D)</strong> → Least significant digit</li>
+                                              <li>7 ÷ 16 = 0 remainder <strong>7</strong> → Most significant digit</li>
+                                          </ul>
+                                      </div>
+                                      <div className="bg-white p-3 rounded">
+                                          <p className="font-semibold mb-2">Step 2: Write digits from last to first</p>
+                                          <p className="text-sm">Reading remainders: <strong>7 D</strong></p>
+                                          <p className="text-green-700 font-bold mt-2">✅ 125₁₀ = 0x7D</p>
+                                          <p className="text-xs text-gray-600 mt-2">Verify: 7×16¹ + 13×16⁰ = 112 + 13 = 125 ✓</p>
+                                      </div>
+                                  </div>
+
+                                  <div className="bg-yellow-50 p-4 rounded-lg border-2 border-yellow-300">
+                                      <h5 className="font-bold text-yellow-900 mb-3">Converting 150₁₀ to Hex:</h5>
+                                      <div className="bg-white p-3 rounded mb-2">
+                                          <p className="font-semibold mb-2">Step 1: Divide by 16 repeatedly</p>
+                                          <ul className="text-sm space-y-1 ml-4">
+                                              <li>150 ÷ 16 = 9 remainder <strong>6</strong> → Least significant digit</li>
+                                              <li>9 ÷ 16 = 0 remainder <strong>9</strong> → Most significant digit</li>
+                                          </ul>
+                                      </div>
+                                      <div className="bg-white p-3 rounded">
+                                          <p className="font-semibold mb-2">Step 2: Write digits from last to first</p>
+                                          <p className="text-sm">Reading remainders: <strong>9 6</strong></p>
+                                          <p className="text-green-700 font-bold mt-2">✅ 150₁₀ = 0x96</p>
+                                          <p className="text-xs text-gray-600 mt-2">Verify: 9×16¹ + 6×16⁰ = 144 + 6 = 150 ✓</p>
+                                      </div>
+                                  </div>
+
+                                  <div className="bg-yellow-50 p-4 rounded-lg border-2 border-yellow-300">
+                                      <h5 className="font-bold text-yellow-900 mb-3">Converting 175₁₀ to Hex:</h5>
+                                      <div className="bg-white p-3 rounded mb-2">
+                                          <p className="font-semibold mb-2">Step 1: Divide by 16 repeatedly</p>
+                                          <ul className="text-sm space-y-1 ml-4">
+                                              <li>175 ÷ 16 = 10 remainder <strong>15 (F)</strong> → Least significant digit</li>
+                                              <li>10 ÷ 16 = 0 remainder <strong>10 (A)</strong> → Most significant digit</li>
+                                          </ul>
+                                      </div>
+                                      <div className="bg-white p-3 rounded">
+                                          <p className="font-semibold mb-2">Step 2: Write digits from last to first</p>
+                                          <p className="text-sm">Reading remainders: <strong>A F</strong></p>
+                                          <p className="text-green-700 font-bold mt-2">✅ 175₁₀ = 0xAF</p>
+                                          <p className="text-xs text-gray-600 mt-2">Verify: 10×16¹ + 15×16⁰ = 160 + 15 = 175 ✓</p>
+                                      </div>
+                                  </div>
+                              </div>
+                          </CollapsibleSection>
+
+                          <CollapsibleSection title="Execution Trace" id="p3-steps">
+                              <div className="space-y-4">
+                                  <div>
+                                      <h4 className="font-semibold text-lg mb-2">Push Loop (Original → Stack):</h4>
+                                      <ol className="list-decimal ml-6">
+                                          <li>Push 0x64 (100 decimal)</li>
+                                          <li>Push 0x7D (125 decimal)</li>
+                                          <li>Push 0x96 (150 decimal)</li>
+                                          <li>Push 0xAF (175 decimal)</li>
+                                      </ol>
+                                      <p className="mt-2 bg-gray-100 p-3 rounded">Stack (top to bottom): [0xAF, 0x96, 0x7D, 0x64]</p>
+                                  </div>
+                                  <div>
+                                      <h4 className="font-semibold text-lg mb-2">Pop Loop (Stack → Reversed Array):</h4>
+                                      <ol className="list-decimal ml-6">
+                                          <li>Pop 0xAF (175) → array[0]</li>
+                                          <li>Pop 0x96 (150) → array[1]</li>
+                                          <li>Pop 0x7D (125) → array[2]</li>
+                                          <li>Pop 0x64 (100) → array[3]</li>
+                                      </ol>
+                                  </div>
+                              </div>
+                          </CollapsibleSection>
+
+                          <CollapsibleSection title="Stack Contents (rsp)" id="p3-stack">
+                              <div className="bg-gray-50 p-4 rounded-lg">
+                                  <h4 className="font-semibold text-lg mb-3">Stack State After Push Loop:</h4>
+                                  <p className="mb-3 text-gray-700">The stack contains the following values (shown in hex format, 64-bit each):</p>
+                                  <Table
+                                      headers={['Stack Position', 'Value (Hex)', 'Value (Decimal)']}
+                                      rows={[
+                                          ['rsp (top)', '0x00000000000000AF', '175'],
+                                          ['rsp+8', '0x0000000000000096', '150'],
+                                          ['rsp+16', '0x000000000000007D', '125'],
+                                          ['rsp+24', '0x0000000000000064', '100']
+                                      ]}
+                                  />
+                                  <div className="mt-4 bg-blue-50 border-l-4 border-blue-500 p-4">
+                                      <p className="font-semibold text-blue-900 mb-2">📚 Stack Visualization (LIFO - Last In, First Out):</p>
+                                      <div className="bg-white p-3 rounded font-mono text-sm">
+                                          <div className="border-b pb-2 mb-2 text-purple-700">← Top of Stack (rsp) - Last pushed, First popped</div>
+                                          <div className="pl-4">0x00000000000000AF (175)</div>
+                                          <div className="pl-4">0x0000000000000096 (150)</div>
+                                          <div className="pl-4">0x000000000000007D (125)</div>
+                                          <div className="pl-4">0x0000000000000064 (100)</div>
+                                          <div className="border-t pt-2 mt-2 text-gray-500">← Bottom - First pushed, Last popped</div>
+                                      </div>
+                                  </div>
+                              </div>
+                          </CollapsibleSection>
+
+                          <CollapsibleSection title="Final Answer (Decimal)" id="p3-answer">
+                              <h4 className="font-semibold text-lg mb-3">Memory State:</h4>
+                              <Table
+                                  headers={['Memory', 'Offset', 'Before', 'After']}
+                                  rows={[
+                                      ['len', '+0', '4', '4'],
+                                      ['array', '+3', '175', '100'],
+                                      ['array', '+2', '150', '125'],
+                                      ['array', '+1', '125', '150'],
+                                      ['array', '+0', '100', '175']
+                                  ]}
+                              />
+                              <h4 className="font-semibold text-lg mb-3 mt-6">Register State:</h4>
+                              <Table
+                                  headers={['Register', 'Value (Decimal)']}
+                                  rows={[
+                                      ['rax', '100 (last popped)'],
+                                      ['rcx', '0 (counter exhausted)'],
+                                      ['rsi', '4 (final index)']
+                                  ]}
+                              />
+                              <div className="bg-green-100 border-l-4 border-green-500 p-4 mt-4">
+                                  <p className="font-semibold text-green-900">Result: Array is reversed!</p>
+                                  <p className="text-green-800 mt-1">[100, 125, 150, 175] → [175, 150, 125, 100]</p>
+                              </div>
+                          </CollapsibleSection>
+                      </div>
+                  );
+
+                  const Problem4 = () => (
+                      <div>
+                          <h3 className="text-2xl font-bold mb-4 text-purple-700">Problem 4: Binary to ASCII Decimal Conversion</h3>
+
+                          <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-4">
+                              <p className="font-semibold text-red-900">Key Concepts:</p>
+                              <ul className="list-disc ml-6 mt-2 text-red-800">
+                                  <li>Number-to-string conversion</li>
+                                  <li>ASCII encoding ('0' = 0x30)</li>
+                                  <li>Repeated division by 10</li>
+                              </ul>
+                          </div>
+
+                          <CodeBlock code={`section .data
+      number dw 987           ; number = 987 = 0x03DB
+      ascii db "000", 0x0A   ; "000\\n" = 0x30 0x30 0x30 0x0A
+
+      section .text
+      _start:
+          mov rcx, 2          ; rcx = 2
+          mov ax, word[number]; ax = 987 = 0x03DB
+          mov bx, 10          ; bx = 10 = 0x000A
+      next:
+          mov dx, 0           ; dx = 0
+          div bx              ; dx = dx:ax % bx = 987%10=7, 98%10=8, 9%10=9
+                              ; ax = dx:ax / bx = 987/10=98, 98/10=9, 9/10=0
+          add byte[ascii+rcx], dl  ; ascii+2 = '0'+7 = 0x30+7 = 0x37 ('7')
+                                   ; ascii+1 = '0'+8 = 0x30+8 = 0x38 ('8')
+                                   ; ascii+0 = '0'+9 = 0x30+9 = 0x39 ('9')
+          dec rcx             ; rcx = 2-1-1-1 = -1
+          cmp rcx, 0          ; rcx < 0 ?
+          jge next            ; T, T, F (exit on 3rd iteration)
+      done:`} />
+
+                          <CollapsibleSection title="Decimal to Hex Conversions" id="p4-conversions">
+                              <div className="space-y-4">
+                                  <div className="bg-red-50 p-4 rounded-lg border-2 border-red-300">
+                                      <h5 className="font-bold text-red-900 mb-3">Converting 987₁₀ to Hex:</h5>
+                                      <div className="bg-white p-3 rounded mb-2">
+                                          <p className="font-semibold mb-2">Step 1: Divide by 16 repeatedly</p>
+                                          <ul className="text-sm space-y-1 ml-4">
+                                              <li>987 ÷ 16 = 61 remainder <strong>11 (B)</strong> → Least significant digit</li>
+                                              <li>61 ÷ 16 = 3 remainder <strong>13 (D)</strong> → Next hex digit</li>
+                                              <li>3 ÷ 16 = 0 remainder <strong>3</strong> → Most significant digit</li>
+                                          </ul>
+                                      </div>
+                                      <div className="bg-white p-3 rounded">
+                                          <p className="font-semibold mb-2">Step 2: Write digits from last to first</p>
+                                          <p className="text-sm">Reading remainders: <strong>3 D B</strong></p>
+                                          <p className="text-green-700 font-bold mt-2">✅ 987₁₀ = 0x03DB</p>
+                                          <p className="text-xs text-gray-600 mt-2">Verify: 3×16² + 13×16¹ + 11×16⁰ = 768 + 208 + 11 = 987 ✓</p>
+                                      </div>
+                                  </div>
+
+                                  <div className="bg-red-50 p-4 rounded-lg border-2 border-red-300">
+                                      <h5 className="font-bold text-red-900 mb-3">Converting 98₁₀ to Hex:</h5>
+                                      <div className="bg-white p-3 rounded mb-2">
+                                          <p className="font-semibold mb-2">Step 1: Divide by 16 repeatedly</p>
+                                          <ul className="text-sm space-y-1 ml-4">
+                                              <li>98 ÷ 16 = 6 remainder <strong>2</strong> → Least significant digit</li>
+                                              <li>6 ÷ 16 = 0 remainder <strong>6</strong> → Most significant digit</li>
+                                          </ul>
+                                      </div>
+                                      <div className="bg-white p-3 rounded">
+                                          <p className="font-semibold mb-2">Step 2: Write digits from last to first</p>
+                                          <p className="text-sm">Reading remainders: <strong>6 2</strong></p>
+                                          <p className="text-green-700 font-bold mt-2">✅ 98₁₀ = 0x0062</p>
+                                          <p className="text-xs text-gray-600 mt-2">Verify: 6×16¹ + 2×16⁰ = 96 + 2 = 98 ✓</p>
+                                      </div>
+                                  </div>
+
+                                  <div className="bg-red-50 p-4 rounded-lg border-2 border-red-300">
+                                      <h5 className="font-bold text-red-900 mb-3">Converting 9₁₀ to Hex:</h5>
+                                      <div className="bg-white p-3 rounded mb-2">
+                                          <p className="font-semibold mb-2">Step 1: Divide by 16 repeatedly</p>
+                                          <ul className="text-sm space-y-1 ml-4">
+                                              <li>9 ÷ 16 = 0 remainder <strong>9</strong> → Only digit</li>
+                                          </ul>
+                                      </div>
+                                      <div className="bg-white p-3 rounded">
+                                          <p className="font-semibold mb-2">Step 2: Write digits from last to first</p>
+                                          <p className="text-sm">Reading remainders: <strong>9</strong></p>
+                                          <p className="text-green-700 font-bold mt-2">✅ 9₁₀ = 0x0009</p>
+                                          <p className="text-xs text-gray-600 mt-2">Verify: 9×16⁰ = 9 ✓</p>
+                                      </div>
+                                  </div>
+
+                                  <div className="bg-red-50 p-4 rounded-lg border-2 border-red-300">
+                                      <h5 className="font-bold text-red-900 mb-3">Converting 10₁₀ to Hex:</h5>
+                                      <div className="bg-white p-3 rounded mb-2">
+                                          <p className="font-semibold mb-2">Step 1: Divide by 16 repeatedly</p>
+                                          <ul className="text-sm space-y-1 ml-4">
+                                              <li>10 ÷ 16 = 0 remainder <strong>10 (A)</strong> → Only digit</li>
+                                          </ul>
+                                      </div>
+                                      <div className="bg-white p-3 rounded">
+                                          <p className="font-semibold mb-2">Step 2: Write digits from last to first</p>
+                                          <p className="text-sm">Reading remainders: <strong>A</strong></p>
+                                          <p className="text-green-700 font-bold mt-2">✅ 10₁₀ = 0x000A (divisor value in bx)</p>
+                                          <p className="text-xs text-gray-600 mt-2">Verify: 10×16⁰ = 10 ✓</p>
+                                      </div>
+                                  </div>
+
+                                  <div className="bg-red-50 p-4 rounded-lg border-2 border-red-300">
+                                      <h5 className="font-bold text-red-900 mb-3">ASCII Conversions (Digit to Character):</h5>
+                                      <div className="bg-white p-3 rounded mb-2">
+                                          <p className="font-semibold mb-2">Converting decimal digits to ASCII characters:</p>
+                                          <ul className="text-sm space-y-2 ml-4">
+                                              <li><strong>'0' character:</strong> 48₁₀ = 0x30 hex
+                                                  <div className="ml-4 text-xs text-gray-600">48 ÷ 16 = 3 remainder 0 → 0x30</div>
+                                              </li>
+                                              <li><strong>'7' character:</strong> 48 + 7 = 55₁₀ = 0x37 hex
+                                                  <div className="ml-4 text-xs text-gray-600">55 ÷ 16 = 3 remainder 7 → 0x37</div>
+                                              </li>
+                                              <li><strong>'8' character:</strong> 48 + 8 = 56₁₀ = 0x38 hex
+                                                  <div className="ml-4 text-xs text-gray-600">56 ÷ 16 = 3 remainder 8 → 0x38</div>
+                                              </li>
+                                              <li><strong>'9' character:</strong> 48 + 9 = 57₁₀ = 0x39 hex
+                                                  <div className="ml-4 text-xs text-gray-600">57 ÷ 16 = 3 remainder 9 → 0x39</div>
+                                              </li>
+                                          </ul>
+                                      </div>
+                                      <div className="bg-white p-3 rounded">
+                                          <p className="text-green-700 font-bold">✅ ASCII '0' starts at 0x30, so digit N = 0x30 + N</p>
+                                      </div>
+                                  </div>
+                              </div>
+                          </CollapsibleSection>
+
+                          <CollapsibleSection title="Conversion Process" id="p4-steps">
+                              <p className="mb-3">Converting 987 to ASCII "987":</p>
+                              <Table
+                                  headers={['Iteration', 'ax (before)', 'ax÷10', 'ax (after)', 'dx (remainder)', 'ascii update', 'rcx']}
+                                  rows={[
+                                      ['1', '987', '987÷10', '98', '7', 'ascii[2] = 0x30+7 = 0x37 (\'7\')', '2→1'],
+                                      ['2', '98', '98÷10', '9', '8', 'ascii[1] = 0x30+8 = 0x38 (\'8\')', '1→0'],
+                                      ['3', '9', '9÷10', '0', '9', 'ascii[0] = 0x30+9 = 0x39 (\'9\')', '0→-1']
+                                  ]}
+                              />
+                              <p className="mt-3 bg-gray-100 p-3 rounded">Loop exits when rcx = -1 (not ≥ 0)</p>
+                          </CollapsibleSection>
+
+                          <CollapsibleSection title="Final Answer" id="p4-answer">
+                              <h4 className="font-semibold text-lg mb-3">Memory State:</h4>
+                              <Table
+                                  headers={['Memory', 'Offset', 'Before', 'After', 'ASCII']}
+                                  rows={[
+                                      ['ascii', '+3', '0x0A', '0x0A', '\\n'],
+                                      ['ascii', '+2', '0x30', '0x37', '\'7\''],
+                                      ['ascii', '+1', '0x30', '0x38', '\'8\''],
+                                      ['ascii', '+0', '0x30', '0x39', '\'9\''],
+                                      ['number', '+1', '0x03', '0x03', ''],
+                                      ['number', '+0', '0xDB', '0xDB', '']
+                                  ]}
+                              />
+                              <h4 className="font-semibold text-lg mb-3 mt-6">Register State:</h4>
+                              <Table
+                                  headers={['Register', 'Value (Hex)', 'Description']}
+                                  rows={[
+                                      ['ax', '0x0000', 'Final quotient (9/10 = 0)'],
+                                      ['bx', '0x000A', 'Divisor (10 decimal)'],
+                                      ['rcx', '0xFFFFFFFFFFFFFFFF', '-1 (loop counter underflow)'],
+                                      ['dx', '0x0009', 'Final remainder (9)']
+                                  ]}
+                              />
+                              <div className="bg-blue-100 border-l-4 border-blue-500 p-4 mt-4">
+                                  <p className="font-semibold text-blue-900">Result: ascii string = "987\n"</p>
+                              </div>
+                          </CollapsibleSection>
+                      </div>
+                  );
+
+                  const QuickReference = () => (
+                      <div className="space-y-6">
+                          <h3 className="text-2xl font-bold mb-4 text-purple-700">Quick Reference Guide</h3>
+
+                          <div className="grid md:grid-cols-2 gap-4">
+                              <div className="bg-white p-6 rounded-lg shadow-md">
+                                  <h4 className="font-bold text-lg mb-3 text-blue-600">Register Sizes</h4>
+                                  <Table
+                                      headers={['Size', 'Registers']}
+                                      rows={[
+                                          ['8-bit', 'al, bl, cl, dl'],
+                                          ['16-bit', 'ax, bx, cx, dx'],
+                                          ['32-bit', 'eax, ebx, ecx, edx'],
+                                          ['64-bit', 'rax, rbx, rcx, rdx, rsi, rdi']
+                                      ]}
+                                  />
+                              </div>
+
+                              <div className="bg-white p-6 rounded-lg shadow-md">
+                                  <h4 className="font-bold text-lg mb-3 text-blue-600">Memory Sizes</h4>
+                                  <Table
+                                      headers={['Directive', 'Size', 'Bytes']}
+                                      rows={[
+                                          ['db', 'byte', '1'],
+                                          ['dw', 'word', '2'],
+                                          ['dd', 'double word', '4'],
+                                          ['dq', 'quad word', '8']
+                                      ]}
+                                  />
+                              </div>
+                          </div>
+
+                          <div className="bg-white p-6 rounded-lg shadow-md">
+                              <h4 className="font-bold text-lg mb-3 text-green-600">Common Instructions</h4>
+                              <div className="grid md:grid-cols-2 gap-4">
+                                  <div>
+                                      <p className="font-semibold mb-2">Data Movement:</p>
+                                      <ul className="list-disc ml-6 text-sm">
+                                          <li><code>mov dst, src</code> - Move data</li>
+                                          <li><code>movzx dst, src</code> - Move with zero-extension</li>
+                                          <li><code>push src</code> - Push onto stack</li>
+                                          <li><code>pop dst</code> - Pop from stack</li>
+                                      </ul>
+                                  </div>
+                                  <div>
+                                      <p className="font-semibold mb-2">Arithmetic:</p>
+                                      <ul className="list-disc ml-6 text-sm">
+                                          <li><code>add dst, src</code> - Addition</li>
+                                          <li><code>sub dst, src</code> - Subtraction</li>
+                                          <li><code>mul src</code> - Multiply (ax/eax)</li>
+                                          <li><code>div src</code> - Divide (dx:ax or edx:eax)</li>
+                                      </ul>
+                                  </div>
+                                  <div>
+                                      <p className="font-semibold mb-2">Control Flow:</p>
+                                      <ul className="list-disc ml-6 text-sm">
+                                          <li><code>cmp op1, op2</code> - Compare</li>
+                                          <li><code>je/jne</code> - Jump if equal/not equal</li>
+                                          <li><code>jge/jle</code> - Jump if greater/less or equal</li>
+                                          <li><code>loop</code> - Decrement rcx and jump</li>
+                                      </ul>
+                                  </div>
+                                  <div>
+                                      <p className="font-semibold mb-2">Other:</p>
+                                      <ul className="list-disc ml-6 text-sm">
+                                          <li><code>inc dst</code> - Increment</li>
+                                          <li><code>dec dst</code> - Decrement</li>
+                                      </ul>
+                                  </div>
+                              </div>
+                          </div>
+
+                          <div className="bg-gradient-to-r from-yellow-50 to-orange-50 p-6 rounded-lg shadow-md border-2 border-yellow-300">
+                              <h4 className="font-bold text-lg mb-3 text-orange-700">⚠️ Critical Points</h4>
+                              <ul className="list-disc ml-6 space-y-2">
+                                  <li><strong>Always show full register size</strong> in hex (e.g., ax = 0x003C, not 3C)</li>
+                                  <li><strong>Little-endian:</strong> Multi-byte values stored LSB first (0x1234 → [0x34][0x12])</li>
+                                  <li><strong>Before division:</strong> Always clear upper register (mov edx, 0 or mov dx, 0)</li>
+                                  <li><strong>Multiplication result doubles size:</strong> 16-bit × 16-bit = 32-bit (dx:ax)</li>
+                                  <li><strong>ASCII digits:</strong> '0' = 0x30, '9' = 0x39</li>
+                              </ul>
+                          </div>
+
+                          <div className="bg-white p-6 rounded-lg shadow-md">
+                              <h4 className="font-bold text-lg mb-3 text-purple-600">Hex ↔ Decimal Quick Reference</h4>
+                              <div className="grid md:grid-cols-2 gap-4">
+                                  <div>
+                                      <p className="font-semibold mb-2 text-sm text-gray-700">Common Values:</p>
+                                      <Table
+                                          headers={['Decimal', 'Hex', 'Binary']}
+                                          rows={[
+                                              ['0', '0x00', '0000'],
+                                              ['3', '0x03', '0011'],
+                                              ['4', '0x04', '0100'],
+                                              ['9', '0x09', '1001'],
+                                              ['10', '0x0A', '1010'],
+                                              ['16', '0x10', '00010000'],
+                                              ['60', '0x3C', '00111100'],
+                                              ['90', '0x5A', '01011010'],
+                                              ['100', '0x64', '01100100'],
+                                              ['125', '0x7D', '01111101'],
+                                              ['150', '0x96', '10010110'],
+                                              ['175', '0xAF', '10101111'],
+                                              ['255', '0xFF', '11111111']
+                                          ]}
+                                      />
+                                  </div>
+                                  <div>
+                                      <p className="font-semibold mb-2 text-sm text-gray-700">ASCII Characters:</p>
+                                      <Table
+                                          headers={['Decimal', 'Hex', 'ASCII']}
+                                          rows={[
+                                              ['10', '0x0A', 'LF (newline)'],
+                                              ['48', '0x30', '\'0\''],
+                                              ['49', '0x31', '\'1\''],
+                                              ['50', '0x32', '\'2\''],
+                                              ['55', '0x37', '\'7\''],
+                                              ['56', '0x38', '\'8\''],
+                                              ['57', '0x39', '\'9\''],
+                                              ['65', '0x41', '\'A\''],
+                                              ['97', '0x61', '\'a\'']
+                                          ]}
+                                      />
+                                  </div>
+                              </div>
+                              <div className="mt-4 bg-purple-50 p-4 rounded-lg">
+                                  <p className="font-semibold text-purple-900 mb-2">Conversion Tips:</p>
+                                  <ul className="text-sm space-y-1 text-purple-800 list-disc ml-6">
+                                      <li>Hex digits: 0-9, A(10), B(11), C(12), D(13), E(14), F(15)</li>
+                                      <li>Each hex digit = 4 bits (nibble)</li>
+                                      <li>Two hex digits = 1 byte (8 bits)</li>
+                                      <li>To convert decimal to hex: repeatedly divide by 16, collect remainders</li>
+                                      <li>ASCII '0'-'9' are 0x30-0x39 (decimal 48-57)</li>
+                                  </ul>
+                              </div>
+                          </div>
+                      </div>
+                  );
+
+                  const ExamTips = () => (
+                      <div className="space-y-6">
+                          <h3 className="text-2xl font-bold mb-4 text-purple-700">Exam Tips & Strategy</h3>
+
+                          <div className="bg-gradient-to-r from-green-50 to-teal-50 p-6 rounded-lg shadow-md border-2 border-green-300">
+                              <h4 className="font-bold text-lg mb-3 text-green-700">📝 Problem-Solving Strategy</h4>
+                              <ol className="list-decimal ml-6 space-y-2">
+                                  <li><strong>Read carefully</strong> - Note register and memory sizes</li>
+                                  <li><strong>Create a trace table</strong> - Track values step-by-step</li>
+                                  <li><strong>Watch for edge cases:</strong>
+                                      <ul className="list-disc ml-6 mt-1">
+                                          <li>Overflow in multiplication</li>
+                                          <li>Sign vs. zero extension</li>
+                                          <li>Clearing registers before division</li>
+                                      </ul>
+                                  </li>
+                                  <li><strong>Double-check hex conversions</strong> - Use the ASCII table</li>
+                                  <li><strong>Remember little-endian</strong> - LSB at lowest address</li>
+                              </ol>
+                          </div>
+
+                          <div className="grid md:grid-cols-2 gap-4">
+                              <div className="bg-white p-6 rounded-lg shadow-md">
+                                  <h4 className="font-bold text-lg mb-3 text-red-600">❌ Common Mistakes</h4>
+                                  <ul className="list-disc ml-6 space-y-2 text-sm">
+                                      <li>Forgetting to clear dx/edx before division</li>
+                                      <li>Mixing up register sizes (al vs ax vs eax)</li>
+                                      <li>Wrong byte order (big vs little endian)</li>
+                                      <li>Not showing full register size in answers</li>
+                                      <li>Forgetting that mul/div affect multiple registers</li>
+                                  </ul>
+                              </div>
+
+                              <div className="bg-white p-6 rounded-lg shadow-md">
+                                  <h4 className="font-bold text-lg mb-3 text-blue-600">✓ Success Checklist</h4>
+                                  <ul className="list-disc ml-6 space-y-2 text-sm">
+                                      <li>Full register values with leading zeros</li>
+                                      <li>Correct hex format (0x prefix)</li>
+                                      <li>Little-endian memory layout</li>
+                                      <li>All affected registers documented</li>
+                                      <li>Clear step-by-step work shown</li>
+                                  </ul>
+                              </div>
+                          </div>
+
+                          <div className="bg-white p-6 rounded-lg shadow-md">
+                              <h4 className="font-bold text-lg mb-3 text-purple-600">📚 Additional Study Resources</h4>
+                              <div className="space-y-3 text-sm">
+                                  <div className="bg-gray-50 p-3 rounded">
+                                      <p className="font-semibold">Assignment 2 - Chapter 7, Quiz 8, 9, 10, 11</p>
+                                      <p className="text-gray-600">Basic assembly instructions and data movement</p>
+                                  </div>
+                                  <div className="bg-gray-50 p-3 rounded">
+                                      <p className="font-semibold">Assignment 3 - Chapter 7, Quiz 13, 14, 15, 16</p>
+                                      <p className="text-gray-600">Advanced operations and addressing modes</p>
+                                  </div>
+                                  <div className="bg-gray-50 p-3 rounded">
+                                      <p className="font-semibold">Assignment 5 - Chapter 8, Quiz 5, 6</p>
+                                      <p className="text-gray-600">Control structures and loops</p>
+                                  </div>
+                                  <div className="bg-gray-50 p-3 rounded">
+                                      <p className="font-semibold">Assignment 6 - Chapter 9, Quiz 4, 5</p>
+                                      <p className="text-gray-600">Stack operations and procedures</p>
+                                  </div>
+                                  <p className="mt-4 text-gray-600 italic">Answers found in Appendix D of "X86-64 Assembly Language Programming with Ubuntu"</p>
+                              </div>
+                          </div>
+                      </div>
+                  );
+
+                  const tabs = [
+                      { id: 'overview', name: 'Overview', icon: '📖' },
+                      { id: 'problem1', name: 'Problem 1', icon: '🔢' },
+                      { id: 'problem2', name: 'Problem 2', icon: '➗' },
+                      { id: 'problem3', name: 'Problem 3', icon: '📚' },
+                      { id: 'problem4', name: 'Problem 4', icon: '🔤' },
+                      { id: 'reference', name: 'Quick Reference', icon: '📋' },
+                      { id: 'tips', name: 'Exam Tips', icon: '💡' }
+                  ];
+
+                  return (
+                      <div className="max-w-7xl mx-auto">
+                          <div className="bg-white rounded-xl shadow-2xl overflow-hidden mb-8">
+                              <div className="bg-gradient-to-r from-purple-600 to-blue-600 p-8 text-white">
+                                  <h1 className="text-4xl font-bold mb-2">CPSC 240 Exam 03</h1>
+                                  <p className="text-xl opacity-90">Computer Organization and Assembly Language Study Guide</p>
+                              </div>
+
+                              <div className="bg-gray-100 px-4 py-2 overflow-x-auto">
+                                  <div className="flex space-x-2 min-w-max">
+                                      {tabs.map(tab => (
+                                          <button
+                                              key={tab.id}
+                                              onClick={() => setActiveTab(tab.id)}
+                                              className={`px-6 py-3 rounded-t-lg font-semibold transition-all whitespace-nowrap ${
+                                                  activeTab === tab.id
+                                                      ? 'bg-white text-purple-600 shadow-md'
+                                                      : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                                              }`}
+                                          >
+                                              <span className="mr-2">{tab.icon}</span>
+                                              {tab.name}
+                                          </button>
+                                      ))}
+                                  </div>
+                              </div>
+
+                              <div className="p-8 bg-white min-h-screen">
+                                  {activeTab === 'overview' && (
+                                      <div className="animate-slide-in">
+                                          <h2 className="text-3xl font-bold mb-6 text-purple-700">Welcome to Your Study Guide!</h2>
+                                          <div className="space-y-6">
+                                              <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-6 rounded-lg shadow-md">
+                                                  <h3 className="text-xl font-bold mb-3 text-purple-700">📚 What's Covered</h3>
+                                                  <p className="text-gray-700 mb-4">This interactive study guide covers all 4 problems from your Exam 03 review:</p>
+                                                  <div className="grid md:grid-cols-2 gap-4">
+                                                      <div className="bg-white p-4 rounded-lg">
+                                                          <h4 className="font-bold text-blue-600 mb-2">Problem 1: Multiplication</h4>
+                                                          <p className="text-sm text-gray-600">Word-sized operations and mul instruction</p>
+                                                      </div>
+                                                      <div className="bg-white p-4 rounded-lg">
+                                                          <h4 className="font-bold text-green-600 mb-2">Problem 2: Division Loop</h4>
+                                                          <p className="text-sm text-gray-600">Counting multiples with div and conditionals</p>
+                                                      </div>
+                                                      <div className="bg-white p-4 rounded-lg">
+                                                          <h4 className="font-bold text-yellow-600 mb-2">Problem 3: Stack Operations</h4>
+                                                          <p className="text-sm text-gray-600">Array reversal using push and pop</p>
+                                                      </div>
+                                                      <div className="bg-white p-4 rounded-lg">
+                                                          <h4 className="font-bold text-red-600 mb-2">Problem 4: ASCII Conversion</h4>
+                                                          <p className="text-sm text-gray-600">Binary to ASCII decimal conversion</p>
+                                                      </div>
+                                                  </div>
+                                              </div>
+
+                                              <div className="bg-white p-6 rounded-lg shadow-md border-2 border-blue-200">
+                                                  <h3 className="text-xl font-bold mb-3 text-blue-700">🎯 How to Use This Guide</h3>
+                                                  <ol className="list-decimal ml-6 space-y-2">
+                                                      <li><strong>Navigate using tabs above</strong> - Each problem has its own section</li>
+                                                      <li><strong>Click section headers</strong> - Expand/collapse to reveal detailed explanations</li>
+                                                      <li><strong>Study the code</strong> - Syntax-highlighted assembly code for clarity</li>
+                                                      <li><strong>Review tables</strong> - Memory and register states before/after execution</li>
+                                                      <li><strong>Check Quick Reference</strong> - Essential instructions and concepts</li>
+                                                      <li><strong>Read Exam Tips</strong> - Strategies and common pitfalls</li>
+                                                  </ol>
+                                              </div>
+
+                                              <div className="bg-gradient-to-r from-green-50 to-teal-50 p-6 rounded-lg shadow-md">
+                                                  <h3 className="text-xl font-bold mb-3 text-green-700">✨ Features</h3>
+                                                  <ul className="list-disc ml-6 space-y-1">
+                                                      <li>Complete step-by-step solutions for all 4 problems</li>
+                                                      <li>Interactive collapsible sections for focused study</li>
+                                                      <li>Color-coded syntax highlighting for assembly code</li>
+                                                      <li>Clear before/after memory and register tables</li>
+                                                      <li>Quick reference guide for common instructions</li>
+                                                      <li>Exam tips and strategy recommendations</li>
+                                                  </ul>
+                                              </div>
+
+                                              <div className="text-center mt-8">
+                                                  <button
+                                                      onClick={() => setActiveTab('problem1')}
+                                                      className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-4 rounded-lg font-bold text-lg hover:from-purple-700 hover:to-blue-700 transition-all shadow-lg"
+                                                  >
+                                                      Start with Problem 1 →
+                                                  </button>
+                                              </div>
+                                          </div>
+                                      </div>
+                                  )}
+                                  {activeTab === 'problem1' && <div className="animate-slide-in"><Problem1 /></div>}
+                                  {activeTab === 'problem2' && <div className="animate-slide-in"><Problem2 /></div>}
+                                  {activeTab === 'problem3' && <div className="animate-slide-in"><Problem3 /></div>}
+                                  {activeTab === 'problem4' && <div className="animate-slide-in"><Problem4 /></div>}
+                                  {activeTab === 'reference' && <div className="animate-slide-in"><QuickReference /></div>}
+                                  {activeTab === 'tips' && <div className="animate-slide-in"><ExamTips /></div>}
+                              </div>
+                          </div>
+
+                          <div className="text-center text-white pb-8">
+                              <p className="text-sm opacity-75">Good luck on your exam! 🎓</p>
+                          </div>
+                      </div>
+                  );
+              };
+
+              ReactDOM.render(<StudyGuide />, document.getElementById('root'));
+    </script>
+  </body>
+</html>
