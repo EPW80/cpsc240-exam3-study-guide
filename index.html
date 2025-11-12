@@ -1397,6 +1397,101 @@ for (int i = 105; i < 109; i++) {
               </div>
             </CollapsibleSection>
 
+            <CollapsibleSection title="Memory Layout Details" id="p4-memory">
+              <div className="space-y-4">
+                <div className="bg-blue-50 p-4 rounded-lg border-2 border-blue-300">
+                  <h5 className="font-bold text-blue-900 mb-3">
+                    Memory Layout Before Execution
+                  </h5>
+                  <div className="bg-white p-3 rounded mb-2">
+                    <p className="font-semibold mb-2">Initial Data Segment:</p>
+                    <pre className="bg-gray-900 text-green-400 p-3 rounded text-sm font-mono">
+{`number dw 987      ; 987 = 0x03DB
+ascii db "000", 0x0A ; "000\\n"`}
+                    </pre>
+                  </div>
+                  <Table
+                    headers={["Memory Label", "Offset", "Hex", "ASCII"]}
+                    rows={[
+                      ["ascii+0", "0", "0x30", "'0'"],
+                      ["ascii+1", "1", "0x30", "'0'"],
+                      ["ascii+2", "2", "0x30", "'0'"],
+                      ["ascii+3", "3", "0x0A", "newline ('\\n')"],
+                      ["number+0", "0", "0xDB", "low byte of 987"],
+                      ["number+1", "1", "0x03", "high byte of 987"],
+                    ]}
+                  />
+                </div>
+
+                <div className="bg-green-50 p-4 rounded-lg border-2 border-green-300">
+                  <h5 className="font-bold text-green-900 mb-3">
+                    How the Algorithm Works
+                  </h5>
+                  <p className="mb-3 text-green-800">
+                    The code divides the 16-bit number (987) by 10 repeatedly to extract each decimal digit,
+                    storing the ASCII version of each remainder into the ascii array in reverse order.
+                  </p>
+                  <div className="bg-white p-3 rounded">
+                    <p className="font-semibold mb-2">Each loop iteration:</p>
+                    <ol className="list-decimal ml-6 space-y-1 text-sm">
+                      <li>Clears dx (mov dx, 0)</li>
+                      <li>Divides ax by 10 (div bx)</li>
+                      <li>The remainder (dl) is a single digit</li>
+                      <li>Adds 0x30 to turn it into ASCII ('0' + digit)</li>
+                      <li>Stores it at ascii + rcx</li>
+                      <li>Decrements rcx to move to the next position for the next digit</li>
+                    </ol>
+                    <p className="mt-3 text-green-700 font-semibold">
+                      This sequence converts 987 → '9', '8', '7'
+                    </p>
+                  </div>
+                </div>
+
+                <div className="bg-purple-50 p-4 rounded-lg border-2 border-purple-300">
+                  <h5 className="font-bold text-purple-900 mb-3">
+                    Memory State After Execution
+                  </h5>
+                  <Table
+                    headers={["Memory Label", "Offset", "Before", "After", "ASCII"]}
+                    rows={[
+                      ["ascii+3", "3", "0x0A", "0x0A", "\\n (unchanged)"],
+                      ["ascii+2", "2", "0x30", "0x37", "'7'"],
+                      ["ascii+1", "1", "0x30", "0x38", "'8'"],
+                      ["ascii+0", "0", "0x30", "0x39", "'9'"],
+                      ["number+1", "1", "0x03", "0x03", "unchanged"],
+                      ["number+0", "0", "0xDB", "0xDB", "unchanged"],
+                    ]}
+                  />
+                  <div className="bg-white p-3 rounded mt-3">
+                    <p className="font-semibold text-purple-900">Result:</p>
+                    <p className="text-lg">
+                      <strong>Before:</strong> <code>"000\\n"</code>
+                    </p>
+                    <p className="text-lg">
+                      <strong>After:</strong> <code>"987\\n"</code>
+                    </p>
+                    <p className="mt-2 text-gray-700">
+                      The ascii array now contains: '9' '8' '7' '\\n' → "987\\n"
+                    </p>
+                    <p className="mt-1 text-gray-700">
+                      The number word remains unchanged at 987.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="bg-gradient-to-r from-blue-100 to-purple-100 p-4 rounded-lg">
+                  <p className="font-semibold text-purple-900 mb-2">
+                    💡 Summary:
+                  </p>
+                  <p className="text-gray-800">
+                    The program converted the binary word 987 into its ASCII decimal string representation
+                    by repeatedly dividing by 10 and converting each digit remainder to its ASCII character
+                    equivalent by adding 0x30.
+                  </p>
+                </div>
+              </div>
+            </CollapsibleSection>
+
             <CollapsibleSection title="Conversion Process" id="p4-steps">
               <p className="mb-3">Converting 987 to ASCII "987":</p>
               <Table
@@ -1442,6 +1537,141 @@ for (int i = 105; i < 109; i++) {
               <p className="mt-3 bg-gray-100 p-3 rounded">
                 Loop exits when rcx = -1 (not ≥ 0)
               </p>
+            </CollapsibleSection>
+
+            <CollapsibleSection title="Code Optimizations" id="p4-optimizations">
+              <div className="space-y-4">
+                <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4">
+                  <h5 className="font-bold text-yellow-900 mb-3">
+                    🚀 Potential Optimizations
+                  </h5>
+                  <p className="text-yellow-800 mb-3">
+                    The current code is correct and educational, but here are some optimizations:
+                  </p>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="bg-white p-4 rounded-lg shadow-md">
+                    <h5 className="font-bold text-red-600 mb-3">❌ Current Code:</h5>
+                    <pre className="bg-gray-900 text-gray-300 p-3 rounded text-sm font-mono">
+{`next:
+    mov dx, 0
+    div bx
+    add byte[ascii+rcx], dl
+    dec rcx
+    cmp rcx, 0
+    jge next`}
+                    </pre>
+                    <ul className="list-disc ml-6 mt-3 text-sm text-gray-700">
+                      <li>mov dx, 0 uses 3 bytes</li>
+                      <li>add requires pre-initialized ascii array</li>
+                      <li>cmp with immediate 0 is standard but longer</li>
+                    </ul>
+                  </div>
+
+                  <div className="bg-white p-4 rounded-lg shadow-md">
+                    <h5 className="font-bold text-green-600 mb-3">✅ Optimized Code:</h5>
+                    <pre className="bg-gray-900 text-green-400 p-3 rounded text-sm font-mono">
+{`next:
+    xor dx, dx
+    div bx
+    add dl, '0'
+    mov byte[ascii+rcx], dl
+    dec rcx
+    jge next`}
+                    </pre>
+                    <ul className="list-disc ml-6 mt-3 text-sm text-gray-700">
+                      <li>xor dx, dx uses 2 bytes (faster)</li>
+                      <li>add dl, '0' then mov is clearer</li>
+                      <li>dec sets flags, no need for cmp</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="bg-blue-50 p-4 rounded-lg border-2 border-blue-300">
+                  <h5 className="font-bold text-blue-900 mb-3">
+                    📊 Optimization Details:
+                  </h5>
+                  <div className="space-y-3">
+                    <div className="bg-white p-3 rounded">
+                      <p className="font-semibold text-blue-800 mb-2">
+                        1. Use XOR instead of MOV for zeroing
+                      </p>
+                      <p className="text-sm text-gray-700">
+                        <code>xor dx, dx</code> is 2 bytes vs <code>mov dx, 0</code> which is 3 bytes.
+                        XOR is also faster on modern CPUs as it breaks dependencies.
+                      </p>
+                    </div>
+
+                    <div className="bg-white p-3 rounded">
+                      <p className="font-semibold text-blue-800 mb-2">
+                        2. Convert digit to ASCII explicitly
+                      </p>
+                      <p className="text-sm text-gray-700">
+                        Using <code>add dl, '0'</code> then <code>mov byte[ascii+rcx], dl</code> is clearer
+                        and doesn't require pre-initializing the ascii buffer to "000".
+                      </p>
+                    </div>
+
+                    <div className="bg-white p-3 rounded">
+                      <p className="font-semibold text-blue-800 mb-2">
+                        3. Eliminate redundant CMP
+                      </p>
+                      <p className="text-sm text-gray-700">
+                        The <code>dec</code> instruction sets flags, so we can use <code>jge next</code>
+                        directly without <code>cmp rcx, 0</code>. This saves one instruction.
+                      </p>
+                    </div>
+
+                    <div className="bg-white p-3 rounded">
+                      <p className="font-semibold text-blue-800 mb-2">
+                        4. Alternative: Use LEA for ASCII conversion
+                      </p>
+                      <p className="text-sm text-gray-700">
+                        <code>lea dx, [rdx + '0']</code> can convert in one instruction, though it's
+                        less common for 8-bit operations.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-4 rounded-lg border-2 border-purple-300">
+                  <h5 className="font-bold text-purple-900 mb-3">
+                    🎯 Full Optimized Version:
+                  </h5>
+                  <CodeBlock
+                    code={`section .data
+    number dw 987           ; number = 987 = 0x03DB
+    ascii db "   ", 0x0A   ; Reserve space (no need to initialize to "000")
+
+section .text
+_start:
+    mov rcx, 2          ; rcx = 2 (starting index)
+    mov ax, word[number]; ax = 987 = 0x03DB
+    mov bx, 10          ; bx = 10 = 0x000A
+next:
+    xor dx, dx          ; dx = 0 (2 bytes vs 3 for mov dx, 0)
+    div bx              ; dx = remainder, ax = quotient
+    add dl, '0'         ; Convert digit to ASCII
+    mov byte[ascii+rcx], dl  ; Store ASCII character
+    dec rcx             ; rcx-- (also sets flags!)
+    jge next            ; Jump if rcx >= 0 (no cmp needed)
+done:`}
+                  />
+                  <div className="bg-white p-3 rounded mt-3">
+                    <p className="font-semibold text-gray-900 mb-2">
+                      Performance Benefits:
+                    </p>
+                    <ul className="list-disc ml-6 text-sm text-gray-700 space-y-1">
+                      <li><strong>Smaller code:</strong> 1 byte saved per iteration with xor</li>
+                      <li><strong>Faster execution:</strong> xor breaks register dependencies</li>
+                      <li><strong>One less instruction:</strong> Removed redundant cmp</li>
+                      <li><strong>Clearer intent:</strong> Explicit ASCII conversion</li>
+                      <li><strong>More flexible:</strong> No requirement for pre-initialized buffer</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
             </CollapsibleSection>
 
             <CollapsibleSection title="Final Answer" id="p4-answer">
