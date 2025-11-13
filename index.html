@@ -2022,12 +2022,290 @@ done:`}
           </div>
         );
 
+        const AlternateProblem1 = () => (
+          <div>
+            <h3 className="text-2xl font-bold mb-4 text-purple-700">
+              Alternate Problem 1: Addition and Multiplication
+            </h3>
+
+            <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-4">
+              <p className="font-semibold text-blue-900">Key Concepts:</p>
+              <ul className="list-disc ml-6 mt-2 text-blue-800">
+                <li>Word-sized (16-bit) operations</li>
+                <li>Addition instruction (add)</li>
+                <li>Multiplication instruction (mul)</li>
+                <li>Result stored in dx:ax (32-bit)</li>
+                <li>Little-endian memory layout</li>
+              </ul>
+            </div>
+
+            <CodeBlock
+              code={`section .data
+    num1 dw 85      ;num1 = 85 = 0x0055
+    num2 dw 72      ;num2 = 72 = 0x0048
+    num3 dw 0       ;num3 = 0 = 0x0000
+
+section .text
+global _start
+_start:
+    mov ax, word[num1]
+    add ax, word[num2]
+    mov bx, 15
+    mul bx
+    mov word[num3], ax
+done:
+    mov rax, 60
+    mov rdi, 0
+    syscall`}
+            />
+
+            <CollapsibleSection
+              title="Decimal to Hex Conversions"
+              id="alt-p1-conversions"
+            >
+              <div className="space-y-4">
+                <div className="bg-purple-50 p-4 rounded-lg border-2 border-purple-300">
+                  <h5 className="font-bold text-purple-900 mb-3">
+                    Converting 85₁₀ to Hex:
+                  </h5>
+                  <div className="bg-white p-3 rounded mb-2">
+                    <p className="font-semibold mb-2">
+                      Step 1: Divide by 16 repeatedly
+                    </p>
+                    <ul className="text-sm space-y-1 ml-4">
+                      <li>
+                        85 ÷ 16 = 5 remainder <strong>5</strong> → Least
+                        significant digit
+                      </li>
+                      <li>
+                        5 ÷ 16 = 0 remainder <strong>5</strong> → Most
+                        significant digit
+                      </li>
+                    </ul>
+                  </div>
+                  <div className="bg-white p-3 rounded">
+                    <p className="font-semibold mb-2">
+                      Step 2: Write digits from last to first
+                    </p>
+                    <p className="text-sm">
+                      Reading remainders: <strong>5 5</strong>
+                    </p>
+                    <p className="text-green-700 font-bold mt-2">
+                      ✅ 85₁₀ = 0x0055
+                    </p>
+                    <p className="text-xs text-gray-600 mt-2">
+                      Verify: 5×16¹ + 5×16⁰ = 80 + 5 = 85 ✓
+                    </p>
+                  </div>
+                </div>
+
+                <div className="bg-purple-50 p-4 rounded-lg border-2 border-purple-300">
+                  <h5 className="font-bold text-purple-900 mb-3">
+                    Converting 72₁₀ to Hex:
+                  </h5>
+                  <div className="bg-white p-3 rounded mb-2">
+                    <p className="font-semibold mb-2">
+                      Step 1: Divide by 16 repeatedly
+                    </p>
+                    <ul className="text-sm space-y-1 ml-4">
+                      <li>
+                        72 ÷ 16 = 4 remainder <strong>8</strong> → Least
+                        significant digit
+                      </li>
+                      <li>
+                        4 ÷ 16 = 0 remainder <strong>4</strong> → Most
+                        significant digit
+                      </li>
+                    </ul>
+                  </div>
+                  <div className="bg-white p-3 rounded">
+                    <p className="font-semibold mb-2">
+                      Step 2: Write digits from last to first
+                    </p>
+                    <p className="text-sm">
+                      Reading remainders: <strong>4 8</strong>
+                    </p>
+                    <p className="text-green-700 font-bold mt-2">
+                      ✅ 72₁₀ = 0x0048
+                    </p>
+                    <p className="text-xs text-gray-600 mt-2">
+                      Verify: 4×16¹ + 8×16⁰ = 64 + 8 = 72 ✓
+                    </p>
+                  </div>
+                </div>
+
+                <div className="bg-purple-50 p-4 rounded-lg border-2 border-purple-300">
+                  <h5 className="font-bold text-purple-900 mb-3">
+                    Converting 157₁₀ to Hex:
+                  </h5>
+                  <div className="bg-white p-3 rounded mb-2">
+                    <p className="font-semibold mb-2">
+                      Step 1: Divide by 16 repeatedly
+                    </p>
+                    <ul className="text-sm space-y-1 ml-4">
+                      <li>
+                        157 ÷ 16 = 9 remainder <strong>13 (D)</strong> → Least
+                        significant digit
+                      </li>
+                      <li>
+                        9 ÷ 16 = 0 remainder <strong>9</strong> → Most
+                        significant digit
+                      </li>
+                    </ul>
+                  </div>
+                  <div className="bg-white p-3 rounded">
+                    <p className="font-semibold mb-2">
+                      Step 2: Write digits from last to first
+                    </p>
+                    <p className="text-sm">
+                      Reading remainders: <strong>9 D</strong>
+                    </p>
+                    <p className="text-green-700 font-bold mt-2">
+                      ✅ 157₁₀ = 0x009D
+                    </p>
+                    <p className="text-xs text-gray-600 mt-2">
+                      Verify: 9×16¹ + 13×16⁰ = 144 + 13 = 157 ✓
+                    </p>
+                  </div>
+                </div>
+
+                <div className="bg-purple-50 p-4 rounded-lg border-2 border-purple-300">
+                  <h5 className="font-bold text-purple-900 mb-3">
+                    Converting 2355₁₀ to Hex:
+                  </h5>
+                  <div className="bg-white p-3 rounded mb-2">
+                    <p className="font-semibold mb-2">
+                      Step 1: Divide by 16 repeatedly
+                    </p>
+                    <ul className="text-sm space-y-1 ml-4">
+                      <li>
+                        2355 ÷ 16 = 147 remainder <strong>3</strong> → Least
+                        significant digit
+                      </li>
+                      <li>
+                        147 ÷ 16 = 9 remainder <strong>3</strong> → Next hex
+                        digit
+                      </li>
+                      <li>
+                        9 ÷ 16 = 0 remainder <strong>9</strong> → Most
+                        significant digit
+                      </li>
+                    </ul>
+                  </div>
+                  <div className="bg-white p-3 rounded">
+                    <p className="font-semibold mb-2">
+                      Step 2: Write digits from last to first
+                    </p>
+                    <p className="text-sm">
+                      Reading remainders: <strong>9 3 3</strong>
+                    </p>
+                    <p className="text-green-700 font-bold mt-2">
+                      ✅ 2355₁₀ = 0x0933
+                    </p>
+                    <p className="text-xs text-gray-600 mt-2">
+                      Verify: 9×16² + 3×16¹ + 3×16⁰ = 2304 + 48 + 3 = 2355 ✓
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </CollapsibleSection>
+
+            <CollapsibleSection title="Step-by-Step Execution" id="alt-p1-steps">
+              <ol className="list-decimal ml-6 space-y-2">
+                <li>
+                  <strong>mov ax, word[num1]:</strong> ax = 0x0055 (85 decimal)
+                </li>
+                <li>
+                  <strong>add ax, word[num2]:</strong>
+                  <ul className="list-disc ml-6 mt-1">
+                    <li>ax = 0x0055 + 0x0048 = 0x009D (157 decimal)</li>
+                    <li>85 + 72 = 157</li>
+                  </ul>
+                </li>
+                <li>
+                  <strong>mov bx, 15:</strong> bx = 0x000F (15 decimal)
+                </li>
+                <li>
+                  <strong>mul bx:</strong>
+                  <ul className="list-disc ml-6 mt-1">
+                    <li>157 × 15 = 2355 decimal = 0x0933 hex</li>
+                    <li>
+                      Result stored as dx:ax (32-bit result split across two
+                      16-bit registers)
+                    </li>
+                    <li>dx = 0x0000 (upper 16 bits)</li>
+                    <li>ax = 0x0933 (lower 16 bits, 2355 decimal)</li>
+                  </ul>
+                </li>
+                <li>
+                  <strong>mov word[num3], ax:</strong> num3 = 0x0933 (2355
+                  decimal)
+                </li>
+              </ol>
+            </CollapsibleSection>
+
+            <CollapsibleSection title="Final Answer" id="alt-p1-answer">
+              <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4 mb-4">
+                <p className="font-semibold text-yellow-900">Important Note:</p>
+                <p className="text-yellow-800 mt-2">
+                  Memory is stored in <strong>little-endian</strong> format. For a word (16-bit) value, the least significant byte is stored at the lower address (+0) and the most significant byte at the higher address (+1).
+                </p>
+              </div>
+
+              <h4 className="font-semibold text-lg mb-3">Memory State:</h4>
+              <Table
+                headers={["Memory Offset", "Value (Hex)"]}
+                rows={[
+                  ["", "before (initial) | after execution"],
+                  ["num3 +1", "0x00 | 0x09"],
+                  ["num3 +0", "0x00 | 0x33"],
+                  ["num2 +1", "0x00 | 0x00"],
+                  ["num2 +0", "0x48 | 0x48"],
+                  ["num1 +1", "0x00 | 0x00"],
+                  ["num1 +0", "0x55 | 0x55"],
+                ]}
+              />
+
+              <h4 className="font-semibold text-lg mb-3 mt-6">
+                Register State (Full 16-bit size):
+              </h4>
+              <Table
+                headers={["Register", "Value (Hex)"]}
+                rows={[
+                  ["ax", "0x0933"],
+                  ["bx", "0x000F"],
+                  ["dx", "0x0000"],
+                ]}
+              />
+
+              <div className="mt-6 bg-green-50 p-4 rounded-lg border-2 border-green-300">
+                <h5 className="font-bold text-green-900 mb-3">
+                  Complete Answer Table (26 points):
+                </h5>
+                <Table
+                  headers={["Memory Offset", "Value (Hex)", "Register", "Value (Hex)"]}
+                  rows={[
+                    ["", "before | after", "", ""],
+                    ["num3 +1", "0x00 | 0x09", "ax", "0x0933"],
+                    ["num3 +0", "0x00 | 0x33", "bx", "0x000F"],
+                    ["num2 +1", "0x00 | 0x00", "dx", "0x0000"],
+                    ["num2 +0", "0x48 | 0x48", "", ""],
+                    ["num1 +1", "0x00 | 0x00", "", ""],
+                    ["num1 +0", "0x55 | 0x55", "", ""],
+                  ]}
+                />
+              </div>
+            </CollapsibleSection>
+          </div>
+        );
+
         const tabs = [
           { id: "overview", name: "Overview", icon: "📖" },
           { id: "problem1", name: "Problem 1", icon: "🔢" },
           { id: "problem2", name: "Problem 2", icon: "➗" },
           { id: "problem3", name: "Problem 3", icon: "📚" },
           { id: "problem4", name: "Problem 4", icon: "🔤" },
+          { id: "alternate", name: "Alternate", icon: "🔄" },
           { id: "reference", name: "Quick Reference", icon: "📋" },
           { id: "tips", name: "Exam Tips", icon: "💡" },
         ];
@@ -2194,6 +2472,11 @@ done:`}
                 {activeTab === "problem4" && (
                   <div className="animate-slide-in">
                     <Problem4 />
+                  </div>
+                )}
+                {activeTab === "alternate" && (
+                  <div className="animate-slide-in">
+                    <AlternateProblem1 />
                   </div>
                 )}
                 {activeTab === "reference" && (
