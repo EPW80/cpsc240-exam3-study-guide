@@ -77,7 +77,3 @@ This project is open source and available for educational purposes.
 
 **Erik Williams**
 - GitHub: [@EPW80](https://github.com/EPW80)
-
----
-
-Good luck on your exam! 🎓
