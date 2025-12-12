@@ -34,3 +34,10 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+
+# Development documentation
+claude.md
+COMPLETION_SUMMARY.md
+
+# PDF exam materials (keep locally, don't commit)
+*.pdf

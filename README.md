@@ -228,13 +228,6 @@ See [CHANGELOG.md](CHANGELOG.md) for version history and upcoming features.
 - **Feedback**: Use the in-app feedback button
 - **Author**: Erik P. Williams - [@EPW80](https://github.com/EPW80)
 
-## 📄 Documentation
-
-- [User Guide](docs/USER_GUIDE.md) - Detailed usage instructions
-- [Developer Guide](docs/DEVELOPER_GUIDE.md) - Architecture and development
-- [Accessibility Statement](docs/ACCESSIBILITY.md) - Accessibility features
-- [Privacy Policy](docs/PRIVACY.md) - Data handling practices
-
 ---
 
 Made with ❤️ for CPSC 240 students. Good luck on your exam!
