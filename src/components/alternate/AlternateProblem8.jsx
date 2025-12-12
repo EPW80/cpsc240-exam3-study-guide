@@ -9,7 +9,7 @@ const AlternateProblem8 = () => {
 
       <KeyConcepts
         title="Key Concepts"
-        items={[
+        concepts={[
           "ASCII digit to numeric conversion (subtract 0x30)",
           "Byte operations on array elements",
           "Register size awareness (8-bit, 16-bit, 32-bit, 64-bit)",
