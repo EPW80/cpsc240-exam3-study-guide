@@ -18,6 +18,7 @@ const AlternateProblem4 = lazy(() => import("./components/alternate/AlternatePro
 const AlternateProblem5 = lazy(() => import("./components/alternate/AlternateProblem5"));
 const AlternateProblem6 = lazy(() => import("./components/alternate/AlternateProblem6"));
 const AlternateProblem7 = lazy(() => import("./components/alternate/AlternateProblem7"));
+const AlternateProblem8 = lazy(() => import("./components/alternate/AlternateProblem8"));
 
 const QuickReference = lazy(() => import("./components/reference/QuickReference"));
 const ExamTips = lazy(() => import("./components/reference/ExamTips"));
@@ -202,6 +203,11 @@ const App = () => {
                   />
                   <hr className="my-8 border-t-2 border-purple-300" />
                   <AlternateProblem7
+                    expandedSections={expandedSections}
+                    toggleSection={toggleSection}
+                  />
+                  <hr className="my-8 border-t-2 border-purple-300" />
+                  <AlternateProblem8
                     expandedSections={expandedSections}
                     toggleSection={toggleSection}
                   />

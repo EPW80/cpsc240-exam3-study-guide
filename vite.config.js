@@ -65,6 +65,7 @@ export default defineConfig({
             "./src/components/alternate/AlternateProblem5",
             "./src/components/alternate/AlternateProblem6",
             "./src/components/alternate/AlternateProblem7",
+            "./src/components/alternate/AlternateProblem8",
           ],
         },
         // Optimize file naming for better caching

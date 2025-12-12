@@ -5,7 +5,7 @@ An interactive, accessible, and feature-rich study guide for Computer Organizati
 ## ✨ Key Features
 
 ### 📚 Comprehensive Content
-- **11 Complete Problem Solutions** (4 main + 7 alternate) with step-by-step explanations
+- **12 Complete Problem Solutions** (4 main + 8 alternate) with step-by-step explanations
 - **Syntax-Highlighted Assembly Code** for better readability
 - **Memory & Register State Tables** showing before/after states
 - **Hex ↔ Decimal Conversions** with detailed workings
