@@ -2,7 +2,11 @@
 // Provides offline support and caching for better performance
 
 const CACHE_NAME = "cpsc240-study-guide-v1";
-const urlsToCache = ["/", "/index.html", "/manifest.json"];
+const urlsToCache = [
+  "/cpsc240-exam3-study-guide/",
+  "/cpsc240-exam3-study-guide/index.html",
+  "/cpsc240-exam3-study-guide/manifest.json",
+];
 
 // Install event - cache essential files
 self.addEventListener("install", (event) => {
@@ -53,7 +57,7 @@ self.addEventListener("fetch", (event) => {
       })
       .catch(() => {
         // Return offline page if available
-        return caches.match("/index.html");
+        return caches.match("/cpsc240-exam3-study-guide/index.html");
       })
   );
 });
