@@ -1,0 +1,8 @@
+# Robots.txt for CPSC 240 Study Guide
+# Allow all web crawlers
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://epw80.github.io/cpsc240-exam3-study-guide/sitemap.xml
