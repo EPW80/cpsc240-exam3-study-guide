@@ -1,6 +1,6 @@
 import { CodeBlock, CollapsibleSection, Table, KeyConcepts } from "../shared";
 
-const AlternateProblem8 = () => {
+const AlternateProblem8 = ({ expandedSections, toggleSection }) => {
   return (
     <div>
       <h3 className="text-2xl font-bold mb-4 text-purple-700">
@@ -59,7 +59,12 @@ next:
     ret`}
       />
 
-      <CollapsibleSection title="Understanding ASCII Conversion" id="alt8-ascii">
+      <CollapsibleSection
+        title="Understanding ASCII Conversion"
+        id="alt8-ascii"
+        expandedSections={expandedSections}
+        toggleSection={toggleSection}
+      >
         <div className="space-y-4">
           <div className="bg-purple-50 p-4 rounded-lg">
             <h5 className="font-bold text-purple-900 mb-2">ASCII Digit Values</h5>
@@ -78,7 +83,12 @@ next:
         </div>
       </CollapsibleSection>
 
-      <CollapsibleSection title="Step-by-Step Execution" id="alt8-steps">
+      <CollapsibleSection
+        title="Step-by-Step Execution"
+        id="alt8-steps"
+        expandedSections={expandedSections}
+        toggleSection={toggleSection}
+      >
         <div className="space-y-4">
           <div className="bg-white p-4 rounded border-2 border-blue-300">
             <h5 className="font-bold mb-2">Initial State:</h5>
@@ -187,7 +197,12 @@ next:
         </div>
       </CollapsibleSection>
 
-      <CollapsibleSection title="Final Answer" id="alt8-answer">
+      <CollapsibleSection
+        title="Final Answer"
+        id="alt8-answer"
+        expandedSections={expandedSections}
+        toggleSection={toggleSection}
+      >
         <div className="space-y-4">
           <div className="bg-green-50 p-4 rounded-lg border-2 border-green-400">
             <h5 className="font-bold text-green-900 mb-3">Register State After Execution:</h5>
