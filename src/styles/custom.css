@@ -1,0 +1,314 @@
+body {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  font-family:
+    "Inter",
+    system-ui,
+    -apple-system,
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.code-block {
+  background: #1e1e1e;
+  border-radius: 8px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.code-line {
+  font-family: "Courier New", monospace;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.keyword {
+  color: #569cd6;
+}
+
+.register {
+  color: #4ec9b0;
+}
+
+.number {
+  color: #b5cea8;
+}
+
+.comment {
+  color: #6a9955;
+}
+
+.section {
+  color: #c586c0;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-in {
+  animation: slideIn 0.4s ease-out;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  body {
+    padding: 0.5rem;
+  }
+  .code-line {
+    font-size: 12px;
+    line-height: 1.4;
+  }
+  .code-block {
+    padding: 0.75rem !important;
+  }
+  /* Better touch targets */
+  button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  /* Prevent text size adjustment on orientation change */
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .code-line {
+    font-size: 11px;
+  }
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Improve table scrolling on mobile */
+.table-container {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Print styles for study guide */
+@media print {
+  /* Reset body background for printing */
+  body {
+    background: white !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Hide interactive elements */
+  button,
+  .no-print,
+  [role="navigation"],
+  header button,
+  .dark-mode-toggle {
+    display: none !important;
+  }
+
+  /* Optimize page layout */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  /* Main container adjustments */
+  .max-w-7xl {
+    max-width: 100% !important;
+    margin: 0 !important;
+  }
+
+  .rounded-xl,
+  .shadow-2xl {
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  /* Header optimization */
+  header,
+  [class*="gradient"] {
+    background: #4a5568 !important;
+    color: white !important;
+    padding: 1rem !important;
+  }
+
+  /* Content area */
+  .p-4,
+  .p-6,
+  .p-8,
+  .sm\\:p-4,
+  .sm\\:p-6,
+  .sm\\:p-8,
+  .md\\:p-8 {
+    padding: 1rem !important;
+  }
+
+  /* Code blocks - ensure readability */
+  .code-block {
+    background: #f7fafc !important;
+    border: 1px solid #cbd5e0 !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .code-line {
+    color: #1a202c !important;
+    font-size: 10pt !important;
+    line-height: 1.4 !important;
+  }
+
+  /* Syntax highlighting for print */
+  .keyword {
+    color: #2563eb !important;
+    font-weight: 600;
+  }
+
+  .register {
+    color: #059669 !important;
+  }
+
+  .number {
+    color: #7c3aed !important;
+  }
+
+  .comment {
+    color: #6b7280 !important;
+    font-style: italic;
+  }
+
+  .section {
+    color: #db2777 !important;
+  }
+
+  /* Tables */
+  table {
+    page-break-inside: avoid;
+    break-inside: avoid;
+    border-collapse: collapse !important;
+  }
+
+  th,
+  td {
+    border: 1px solid #cbd5e0 !important;
+    padding: 0.5rem !important;
+  }
+
+  th {
+    background: #e5e7eb !important;
+  }
+
+  /* Sections */
+  section,
+  .problem-section {
+    page-break-inside: avoid;
+    break-inside: avoid;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Headings */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    page-break-after: avoid;
+    break-after: avoid;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  h1 {
+    font-size: 20pt !important;
+  }
+
+  h2 {
+    font-size: 16pt !important;
+  }
+
+  h3 {
+    font-size: 14pt !important;
+  }
+
+  /* Lists */
+  ul,
+  ol {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* Links - show URLs */
+  a[href]:after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+    color: #6b7280;
+  }
+
+  a[href^="#"]:after,
+  a[href^="javascript:"]:after {
+    content: "";
+  }
+
+  /* Key concepts boxes */
+  .bg-blue-50,
+  .bg-purple-50 {
+    background: #f3f4f6 !important;
+    border: 1px solid #d1d5db !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* Remove animations */
+  .animate-slide-in,
+  .animate-spin {
+    animation: none !important;
+  }
+
+  /* Footer */
+  footer {
+    page-break-before: avoid;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid #cbd5e0;
+  }
+
+  /* Hide dark mode specific elements */
+  [class*="dark:"] {
+    display: revert !important;
+  }
+
+  /* Ensure good contrast */
+  .text-gray-600,
+  .text-gray-700,
+  .text-gray-800 {
+    color: #1f2937 !important;
+  }
+
+  /* Page breaks */
+  .page-break-before {
+    page-break-before: always;
+    break-before: page;
+  }
+
+  .page-break-after {
+    page-break-after: always;
+    break-after: page;
+  }
+
+  /* Widows and orphans control */
+  p {
+    orphans: 3;
+    widows: 3;
+  }
+}
